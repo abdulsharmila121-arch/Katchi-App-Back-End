@@ -17,6 +17,11 @@ async function generateMLAComplaintPDF(complaint) {
         <!DOCTYPE html>
         <html lang="ta">
         <head>
+        <head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;700&display=swap" rel="stylesheet">
             <meta charset="UTF-8">
             <style>
                 @page { size: A4; margin: 15mm 15mm 20mm 15mm; }
@@ -92,6 +97,11 @@ async function generateMLAComplaintPDF(complaint) {
                 </div>
             </div>
         </body>
+        <style>
+    body {
+      font-family: 'Noto Sans Tamil', sans-serif !important;
+    }
+  </style>
         </html>
         `;
 
@@ -99,7 +109,7 @@ async function generateMLAComplaintPDF(complaint) {
         const page = await browser.newPage();
         
         await page.setContent(htmlContent, { 
-            waitUntil: 'domcontentloaded', 
+            waitUntil: 'networkidle', 
             timeout: 60000 
         });
 
