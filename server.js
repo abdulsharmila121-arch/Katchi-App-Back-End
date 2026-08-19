@@ -952,7 +952,7 @@ async function generatePDF() {
 
     // 3. Content-ஐ செட் செய்து Load ஆகுமாறு பார்த்தல்
     await page.setContent(htmlContent, {
-      waitUntil: 'domcontentloaded',
+      waitUntil: 'networkidle',
       timeout: 60000
     });
 
