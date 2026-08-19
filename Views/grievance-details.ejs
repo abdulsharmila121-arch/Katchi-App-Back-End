@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>மனு முழு விவரங்கள்</title>
+    <style>
+        .ai-assistant-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  max-width: 380px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.ai-assistant-card h3 {
+  margin: 0 0 4px 0;
+  color: #1e293b;
+  font-size: 18px;
+}
+
+.ai-assistant-card .subtitle {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 14px;
+}
+
+.chat-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input-group input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.chat-input-group input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.chat-input-group button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s;
+}
+
+.chat-input-group button:hover {
+  background: #1d4ed8;
+}
+
+.response-box {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+  font-size: 13px;
+  border-left: 4px solid #2563eb;
+}
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #f1f5f9; padding: 30px 15px; margin: 0; }
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        .back-btn {
+            display: inline-block; padding: 10px 18px; background: #1e3a8a;
+            color: white; text-decoration: none; border-radius: 8px;
+            font-weight: 600; margin-bottom: 20px;
+        }
+
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .card-header { border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .card-title { font-size: 20px; color: #0f172a; margin: 0; }
+
+        .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+        .detail-item { background: #f8fafc; padding: 14px; border-radius: 8px; border-left: 4px solid #1e3a8a; }
+        .detail-item label { font-size: 12px; color: #64748b; font-weight: bold; display: block; }
+        .detail-item p { margin: 6px 0 0 0; font-size: 15px; font-weight: 600; color: #1e293b; }
+
+        .status-badge { padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 14px; }
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-completed { background: #dcfce7; color: #15803d; }
+        .status-progress { background: #dbeafe; color: #1e40af; }
+
+        .desc-box { margin-top: 20px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+
+        /* Feedback Form */
+        .feedback-form label { display: block; font-weight: 600; margin-top: 15px; font-size: 14px; }
+        .feedback-form select, .feedback-form textarea {
+            width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none;
+        }
+        .submit-btn {
+            background: #16a34a; color: white; border: none; padding: 12px; width: 100%;
+            margin-top: 18px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="/" class="back-btn">⬅️ முதன்மைப் பக்கத்திற்குச் செல் (Back)</a>
+
+    <!-- 🔍 Grievance ID Search Box -->
+    <div style="background: #ffffff; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e2e8f0;">
+        <h3 style="margin-top: 0; color: #1e293b; font-size: 18px;">🔍 மனுவின் நிலையை அறிய (Check Status)</h3>
+        <form action="/grievance-details" method="GET" style="display: flex; gap: 10px; max-width: 500px;">
+            <input 
+                type="text" 
+                name="id" 
+                placeholder="உங்கள் மனு எண்ணை உள்ளிடவும் (e.g. GRIEV-2026-0002)" 
+                required
+                style="flex: 1; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px;"
+            >
+            <button 
+                type="submit" 
+                style="background: #253b80; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;"
+            >
+                தேடு (Search)
+            </button>
+        </form>
+    </div>
+
+    <!-- Grievance Full Details -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">📋 மனுவின் முழு தகவல்கள்</h2>
+            <span id="statusBadge" class="status-badge status-pending">⚠️ நிலுவையில் உள்ளது</span>
+        </div>
+
+        <div class="details-grid">
+            <div class="detail-item">
+                <label>மனு எண் (Grievance ID)</label>
+                <p id="dispGrievanceId">-</p>
+            </div>
+            
+            <div class="detail-item">
+                <label>துறை (Department)</label>
+                <p id="dispDepartment">-</p>
+            </div>
+            <div class="detail-item">
+                <label>பதிவு செய்யப்பட்ட தேதி</label>
+                <p id="dispDate">-</p>
+            </div>
+            <div class="detail-item">
+                <label>மனுதாரர் பெயர்</label>
+                <p id="dispName">-</p>
+            </div>
+        </div>
+
+        <div class="desc-box">
+            <label style="font-size: 12px; color: #64748b; font-weight: bold;">மனுவின் விவரம் (Description):</label>
+            <p id="dispDescription" style="margin-top: 6px; line-height: 1.5;">-</p>
+        </div>
+    </div>
+
+    <!-- Public Feedback Section -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">⭐ உங்கள் கருத்து (Public Feedback)</h2>
+        </div>
+        
+        <form class="feedback-form" onsubmit="submitFeedback(event)">
+            <label>சேவை மதிப்பீடு (Rating):</label>
+            <select id="rating" required>
+                <option value="5">⭐⭐⭐⭐⭐ - மிகவும் திருப்தி</option>
+                <option value="4">⭐⭐⭐⭐ - திருப்தி</option>
+                <option value="3">⭐⭐⭐ - பரவாயில்லை</option>
+                <option value="2">⭐⭐ - திருப்தியில்லை</option>
+                <option value="1">⭐ - மிகவும் மோசம்</option>
+            </select>
+
+            <label>கருத்துக்கள் / கருத்துகள்:</label>
+            <textarea id="feedbackText" rows="4" placeholder="இங்கு உங்கள் கருத்தைப் பதிவிடவும்..." required></textarea>
+
+            <button type="submit" class="submit-btn">கருத்தை சமர்ப்பி (Submit Feedback)</button>
+        </form>
+        <div id="feedbackResponse" style="margin-top: 10px; font-weight: bold; text-align: center;"></div>
+    </div>
+</div>
+
+<div class="ai-assistant-card">
+  <h3>🤖 AI Assistant</h3>
+  <p class="subtitle">உங்கள் மனு நிலையை (Status) எளிதாக அறிய Grievance ID உள்ளிடவும்</p>
+  
+  <div class="chat-input-group">
+    <input type="text" id="aiGrievanceInput" placeholder="எ.கா: GRIEV-2026-0002" value="GRIEV-2026-0002" />
+    <button type="button" id="aiSendBtn">
+      <span>அனுப்பு</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Result Show ஆக இந்த Div கண்டிப்பா தேவை -->
+  <div id="aiResponseContainer" class="response-box" style="display: none;"></div>
+</div>
+
+<script>
+async function sendMessage() {
+  const input = document.getElementById('userInput').value;
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: input })
+  });
+  const data = await res.json();
+  document.getElementById('chat-messages').innerHTML += `<p><b>You:</b> ${input}</p><p><b>Bot:</b> ${data.reply}</p>`;
+}
+</script>
+
+<script>
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const grievanceId = urlParams.get('id');
+
+        if (!grievanceId) {
+            return;
+        }
+
+        fetch(`/api/quick-status/${encodeURIComponent(grievanceId)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    alert('❌ ' + data.message);
+                    return;
+                }
+
+                const g = data.grievance;
+
+                // Elements-ல் தகவல்களை நிரப்புதல்
+                if (document.getElementById('dispGrievanceId')) {
+                    document.getElementById('dispGrievanceId').innerText = g.grievanceId || '-';
+                }
+                if (document.getElementById('dispDepartment')) {
+                    document.getElementById('dispDepartment').innerText = g.department || '-';
+                }
+                if (document.getElementById('dispDate')) {
+                    document.getElementById('dispDate').innerText = g.createdAt || '-';
+                }
+                if (document.getElementById('dispName')) {
+                    document.getElementById('dispName').innerText = g.applicantName || '-';
+                }
+                if (document.getElementById('dispDescription')) {
+                    document.getElementById('dispDescription').innerText = g.description || '-';
+                }
+
+                // Status Badge Update
+                const badge = document.getElementById('statusBadge');
+                if (badge) {
+                    badge.innerText = g.status || 'Pending';
+                    badge.className = 'status-badge ';
+                    if (g.status === 'Completed' || g.status === 'Resolved') {
+                        badge.classList.add('status-completed');
+                    } else if (g.status === 'In_Progress') {
+                        badge.classList.add('status-progress');
+                    } else {
+                        badge.classList.add('status-pending');
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Fetch Error:', err);
+            });
+    };
+
+    function submitFeedback(event) {
+        event.preventDefault();
+        const urlParams = new URLSearchParams(window.location.search);
+        const grievanceId = urlParams.get('id');
+        const rating = document.getElementById('rating').value;
+        const feedbackText = document.getElementById('feedbackText').value;
+
+        if (!grievanceId) {
+            alert('தயவுசெய்து முதலில் மனுவைத் தேடவும்!');
+            return;
+        }
+
+        fetch('/api/submit-feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ grievanceId, rating, feedbackText })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const respDiv = document.getElementById('feedbackResponse');
+            if (data.success) {
+                respDiv.style.color = 'green';
+                respDiv.innerText = '✅ ' + data.message;
+                document.getElementById('feedbackText').value = '';
+            } else {
+                respDiv.style.color = 'red';
+                respDiv.innerText = '❌ கருத்துச் சமர்ப்பிப்பதில் தோல்வி!';
+            }
+        })
+        .catch(err => console.error('Feedback Error:', err));
+    }
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('aiSendBtn');
+    const input = document.getElementById('aiGrievanceInput');
+    const resContainer = document.getElementById('aiResponseContainer');
+
+    async function checkStatus() {
+      const grievanceId = input.value.trim();
+      if (!grievanceId) {
+        alert('தயவுசெய்து Grievance ID உள்ளிடவும்!');
+        return;
+      }
+
+      resContainer.style.display = 'block';
+      resContainer.innerHTML = '⏳ <i>தேடப்படுகிறது...</i>';
+
+      try {
+        const response = await fetch(`/api/quick-status/${encodeURIComponent(grievanceId)}`);
+        const data = await response.json();
+
+        if (data.success) {
+          const g = data.grievance;
+          resContainer.innerHTML = `
+            <div style="color: #1e293b;">
+              <p style="margin: 2px 0;"><strong>மனு எண்:</strong> ${g.grievanceId}</p>
+              <p style="margin: 2px 0;"><strong>பெயர்:</strong> ${g.applicantName}</p>
+              <p style="margin: 2px 0;"><strong>துறை:</strong> ${g.department}</p>
+              <p style="margin: 2px 0;"><strong>நிலை:</strong> <b style="color: #2563eb;">${g.status}</b></p>
+            </div>
+          `;
+        } else {
+          resContainer.innerHTML = `<span style="color: #dc2626;">❌ ${data.message}</span>`;
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        resContainer.innerHTML = `<span style="color: #dc2626;">⚠️ API தொடர்பு கொள்வதில் பிழை ஏற்பட்டது!</span>`;
+      }
+    }
+
+    // Button Click Event
+    btn.addEventListener('click', checkStatus);
+
+    // Enter Key Press Event
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') checkStatus();
+    });
+  });
+</script>
+</body>
+</html>

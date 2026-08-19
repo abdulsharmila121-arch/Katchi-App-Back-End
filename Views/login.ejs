@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">அதிகாரப்பூர்வ உள்நுழைவு போர்ட்டல்</title>
+    
+    <style>
+        /* ==========================================================================
+           🏛️ GLOBAL BRANDING & HEADER STYLES
+           ========================================================================== */
+        :root {
+            --primary-blue: #253b80;
+            --accent-red: #b71c1c;
+            --light-bg: #f8fafc;
+            --text-dark: #1e293b;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: #f4f6f9; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh;
+            color: var(--text-dark);
+            top: 0px !important;
+            position: static !important;
+        }
+
+        /* 🌐 Top Accessibility Bar */
+        .top-meta-bar {
+            background-color: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 6px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #475569;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .top-meta-bar a { color: #475569; text-decoration: none; }
+        .meta-right { display: flex; align-items: center; gap: 15px; }
+        .txt-sz {
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            padding: 2px 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .active-sz { background: var(--primary-blue); color: white; border-color: var(--primary-blue); }
+
+        /* 🏢 Main Logo Header Section */
+        .gov-logo-header {
+            background: #ffffff;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary-blue);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .logo-box-tn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid var(--primary-blue);
+            padding-left: 12px;
+        }
+
+        .tn-emblem { font-size: 26px; }
+        .logo-text-vertical { display: flex; flex-direction: column; }
+
+        .tn-main-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e3c72;
+            letter-spacing: 0.3px;
+        }
+
+        .tn-sub-title {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .header-auth-buttons { display: flex; gap: 12px; align-items: center; }
+
+        .btn-gov-outline {
+            background: #ffffff;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-gov-outline:hover { background: #f0f4f8; }
+
+        .btn-gov-solid {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #1e3c72 100%);
+            color: #ffffff;
+            border: none;
+            padding: 11px 24px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(37, 59, 128, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        /* 📢 Moving Ticker Banner */
+        .ticker-container {
+            background: #eef4fc;
+            border-bottom: 1px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            padding: 8px 20px;
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .ticker-wrap { flex-grow: 1; overflow: hidden; white-space: nowrap; }
+        .ticker-move {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 30s linear infinite;
+            color: #1e293b;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        @keyframes marquee {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        /* 🪟 MODAL POPUP STYLES */
+        .login-modal-overlay {
+            display: none; 
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); 
+            z-index: 9999;
+            justify-content: center; 
+            align-items: center;
+        }
+
+        .login-modal-content {
+            background: #ffffff;
+            width: 100%;
+            max-width: 480px;
+            padding: 35px;
+            box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            position: relative;
+            border-top: 5px solid var(--primary-blue);
+        }
+
+        .close-modal-x {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .close-modal-x:hover { color: var(--accent-red); }
+
+        .modal-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        .tab-btn-active { 
+            flex: 1; padding: 12px; font-weight: bold; border: none; background: var(--primary-blue); color: white; border-radius: 6px; cursor: pointer; font-size: 14px;
+        }
+        .tab-btn-inactive { 
+            flex: 1; padding: 12px; font-weight: bold; border: none; background: #e2e8f0; color: #334155; border-radius: 6px; cursor: pointer; font-size: 14px;
+        }
+
+        .old-form-group { display: flex; flex-direction: column; margin-bottom: 18px; }
+        .old-form-group label { font-size: 14px; color: #334155; font-weight: 600; margin-bottom: 8px; }
+        .old-form-group input, .old-form-group select { 
+            width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; box-sizing: border-box; 
+        }
+
+        .btn-old-submit {
+            width: 100%; padding: 14px; background: var(--primary-blue); color: white; border: none; 
+            border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: background 0.2s;
+        }
+        .btn-old-submit:hover { background: #1e3c72; }
+
+        .btn-officer-info {
+            background-color: #0e76a8;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-officer-info:hover { background-color: #085277; }
+
+        /* Modal Popup Background */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 25px;
+            border-radius: 10px;
+            width: 85%;
+            max-width: 900px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute; right: 20px; top: 15px;
+            font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer;
+        }
+        .close-btn:hover { color: #000; }
+
+        #searchDepartment {
+            width: 100%; padding: 10px; margin: 15px 0;
+            border: 1px solid #ccc; border-radius: 5px; font-size: 14px;
+        }
+
+        .table-container { overflow-x: auto; }
+
+        #officersTable {
+            width: 100%; border-collapse: collapse; margin-top: 10px;
+        }
+        #officersTable th, #officersTable td {
+            border: 1px solid #ddd; padding: 12px; text-align: left; font-size: 14px;
+        }
+        #officersTable th { background-color: #f4f6f8; color: #333; }
+
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: white; }
+        .badge.eb { background-color: #e67e22; }
+        .badge.water { background-color: #2980b9; }
+        .badge.health { background-color: #27ae60; }
+        .badge.road { background-color: #8e44ad; }
+
+        .login-dashboard-container {
+            display: flex !important; flex-direction: row !important;
+            justify-content: center; align-items: stretch; gap: 30px;
+            max-width: 1100px; margin: 30px auto; padding: 0 20px; box-sizing: border-box;
+        }
+
+        .left-section { flex: 0 0 340px; }
+        .vertical-leader-card {
+            position: relative; width: 100%; height: 480px;
+            border-radius: 28px; border: 8px solid #f2ab00;
+            overflow: hidden; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            background-color: #000;
+        }
+        .vertical-img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+        .poster-overlay {
+            position: absolute; bottom: 0; left: 0; right: 0; padding: 30px 20px 20px 20px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 10%, rgba(0, 0, 0, 0.6) 60%, transparent 100%);
+            text-align: center; display: flex; flex-direction: column; align-items: center;
+        }
+        .poster-name { color: #ffffff; font-size: 22px; font-weight: 800; margin: 0 0 8px 0; letter-spacing: 0.5px; }
+        .poster-badges { display: flex; align-items: center; gap: 8px; }
+        .badge-cm { background-color: #d90429; color: #ffffff; font-weight: 900; font-size: 12px; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; }
+
+        .right-section { flex: 1; }
+        .notice-board-card {
+            background-color: #ffffff; border-radius: 24px; padding: 24px;
+            height: 480px; box-sizing: border-box; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0; border-top: 6px solid #d90429; display: flex; flex-direction: column;
+        }
+        .notice-header { display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 15px; }
+        .notice-header h2 { font-size: 20px; color: #0f172a; margin: 0; font-weight: 700; }
+        .notice-icon { font-size: 24px; }
+        .live-indicator { font-size: 11px; background-color: #fee2e2; color: #dc2626; padding: 2px 8px; border-radius: 12px; font-weight: bold; margin-left: auto; }
+
+        .notice-scroll-container { max-height: 400px; overflow: hidden; position: relative; }
+        .notice-list-track { display: flex; flex-direction: column; gap: 12px; }
+        .notice-item {
+            background-color: #f8fafc; border-left: 4px solid #94a3b8; padding: 18px 20px !important;
+            border-radius: 0 12px 12px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04); transition: all 0.2s ease-in-out;
+        }
+        .notice-date { font-size: 11px; color: #64748b; font-weight: 600; }
+        .notice-item h3 { margin: 3px 0 5px 0; font-size: 15px; color: #1e293b; }
+        .notice-item p { margin: 0; font-size: 13px; color: #475569; line-height: 1.4; }
+
+        @media (max-width: 850px) {
+            .login-dashboard-container { flex-direction: column !important; align-items: center; }
+            .left-section, .right-section { width: 100%; max-width: 340px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-meta-bar">
+        <div class="meta-left"><a href="#" id="txtSkip">Skip to main content</a></div>
+        <div class="meta-right">
+            <div style="display: inline-flex; align-items: center; gap: 5px;">
+                <span>🌐</span>
+                <select id="appLangSelect" onchange="toggleLanguage(this.value)" style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 6px; font-weight: bold; font-size: 12px; cursor: pointer; color: #1e293b;">
+                    <option value="ta" selected>தமிழ்</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+            | <span id="txtCallUs">📞 Call Us</span> | 
+            <button class="txt-sz">A<sup>-</sup></button>
+            <button class="txt-sz active-sz">A</button>
+            <button class="txt-sz">A<sup>+</sup></button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="gov-logo-header">
+        <div class="logo-box-tn">
+            <span class="tn-emblem">🏛️</span> 
+            <div class="logo-text-vertical">
+                <span class="tn-main-title" id="txtMainTitle">தமிழ்நாடு மக்கள் குறைதீர்ப்பு போர்ட்டல்</span>
+                <span class="tn-sub-title" id="txtSubTitle">Public Grievance Redressal Portal • Government of Tamil Nadu</span>
+            </div>
+            <span class="tn-emblem">🏛️</span>
+        </div>
+
+        <div class="header-auth-buttons">
+            <button class="btn-gov-outline" id="btnHeaderLogin" onclick="openLoginModal()">Login</button>
+            <button class="btn-gov-solid" onclick="window.location.href='/grievance-details'">🔍 நிலை அறிய</button>
+            <button type="button" class="btn-officer-info" onclick="openOfficialModal()">Official Details</button>
+        </div>
+    </div>
+
+    <!-- Moving Ticker -->
+    <div class="ticker-container">
+        <div class="ticker-wrap">
+            <div class="ticker-move" id="txtTicker">
+                🔔 அறிவிப்பு: பொதுமக்கள் தங்களது தொகுதிகளுக்கு உட்பட்ட குறைகளை உடனுக்குடன் சமர்ப்பித்து பயன்பெறலாம். Twilio SMS வழித்தடம் மூலமாக தங்களின் மனுவின் தற்போதைய நிலை குறுஞ்செய்தியாக தங்களுக்கு அனுப்பப்படும். !!
+            </div>
+        </div>
+    </div>
+
+    <!-- Officer Details Modal -->
+    <div id="officerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeOfficialModal()">&times;</span>
+            <h2>🏛️ அரசுத் துறைகள் மற்றும் அதிகாரிகளின் விவரங்கள்</h2>
+            <p class="modal-subtext">உங்கள் புகாரின் துறைக்கு ஏற்ப சரியான அதிகாரியைத் தேர்ந்தெடுத்து மனு அனுப்பவும்.</p>
+
+            <input type="text" id="searchDepartment" onkeyup="filterDepartments()" placeholder="துறை அல்லது புகாரைத் தேடவும் (எ.கா. மின்சாரம், குடிநீர்)...">
+
+            <div class="table-container">
+                <table id="officersTable">
+                    <thead>
+                        <tr>
+                            <th>புகார் வகை (Complaint Category)</th>
+                            <th>பொறுப்புத் துறை (Department)</th>
+                            <th>அதிகாரி / பதவி (Official Name & Role)</th>
+                            <th>தொடர்பு எண் / மின்னஞ்சல்</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>தெருவிளக்கு, டிரான்ஸ்பார்மர், மின்சாரக் கட்டணம்</td>
+                            <td><span class="badge eb">மின்சார வாரியம் (TNEB)</span></td>
+                            <td>உதவிப் பொறியாளர் (AE) - மின்சாரம்</td>
+                            <td>📞 94987 94987<br>✉️ ae.eb@tn.gov.in</td>
+                        </tr>
+                        <tr>
+                            <td>குடிநீர் தட்டுப்பாடு, சாக்கடை அடைப்பு, லீக்கேஜ்</td>
+                            <td><span class="badge water">குடிநீர் மற்றும் கழிவுநீரகற்று வாரியம்</span></td>
+                            <td>உதவிப் பொறியாளர் (AE) - குடிநீர்</td>
+                            <td>📞 044-28454000<br>✉️ cmwssb@tn.gov.in</td>
+                        </tr>
+                        <tr>
+                            <td>குப்பை அகற்றுதல், கொசுத் தொல்லை, சுகாதாரமின்மை</td>
+                            <td><span class="badge health">சுகாதாரத் துறை / மாநகராட்சி</span></td>
+                            <td>சுகாதார ஆய்வாளர் (Sanitary Inspector)</td>
+                            <td>📞 1913 (மாநகராட்சி)<br>✉️ health@tn.gov.in</td>
+                        </tr>
+                        <tr>
+                            <td>சாலைப் பழுது, குழிகள், நடைபாதை சேதம்</td>
+                            <td><span class="badge road">நெடுஞ்சாலைத் துறை / கார்ப்பரேஷன்</span></td>
+                            <td>உதவிச் செயற்பொறியாளர் (AEE) - சாலைகள்</td>
+                            <td>📞 044-25619211<br>✉️ roads@tn.gov.in</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginOverlay" class="login-modal-overlay">
+        <div class="login-modal-content">
+            <button class="close-modal-x" onclick="closeLoginModal()">×</button>
+            
+            <div class="modal-tabs">
+                <button type="button" id="tabPublic" onclick="switchTab('Public')" class="tab-btn-active">👤 பொது மக்கள் (Public OTP)</button>
+                <button type="button" id="tabOfficial" onclick="switchTab('Official')" class="tab-btn-inactive">🏢 அதிகாரிகள் (Official)</button>
+            </div>
+
+            <form action="/login" method="POST" id="unifiedLoginForm">
+                <input type="hidden" id="loginType" name="loginType" value="public">
+                
+                <div id="publicLoginSection">
+                    <div class="old-form-group">
+                        <label for="mobileNumber" id="lblMobile">அலைபேசி எண் (Mobile Number):</label>
+                        <input type="text" id="mobileNumber" name="mobileNumber" maxlength="10" placeholder="10-இலக்க அலைபேசி எண்ணை உள்ளிடவும்">
+                    </div>
+
+                    <div class="old-form-group" id="otpSection" style="display: none;">
+                        <label for="otp" id="lblOtp">ஒடிபி (Enter OTP):</label>
+                        <input type="text" id="otp" name="otp" maxlength="4" placeholder="Enter OTP (Test: 1234)">
+                    </div>
+
+                    <button type="button" id="publicSubmitBtn" onclick="handlePublicOTPFlow()" class="btn-old-submit">Send OTP ✉️</button>
+                </div>
+
+                <div id="officialLoginSection" style="display: none;">
+                    <div class="old-form-group">
+                        <label for="username" id="lblUsername">பயனர் பெயர் (Official Username):</label>
+                        <input type="text" id="username" name="username" placeholder="e.g. mla_annanagar, cm">
+                    </div>
+
+                    <div class="old-form-group">
+                        <label for="password" id="lblPassword">கடவுச்சொல் (Password):</label>
+                        <input type="password" id="password" name="password" placeholder="கடவுச்சொல்லை உள்ளிடவும்">
+                    </div>
+
+                    <button type="submit" class="btn-old-submit" id="btnOfficialSubmit">அதிகாரப்பூர்வ உள்நுழைவு ❯</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="login-dashboard-container">
+        <!-- LEFT SIDE: Vertical Poster Card -->
+        <div class="left-section">
+            <div class="vertical-leader-card">
+                <img src="/images/vijay_cm.jpg" alt="C. Joseph Vijay" class="vertical-img" onerror="this.src='https://via.placeholder.com/340x480?text=Leader+Image'">
+                <div class="poster-overlay">
+                    <h2 class="poster-name">C. Joseph Vijay</h2>
+                    <div class="poster-badges">
+                        <span class="badge-cm">Chief Minister</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE: Public Announcements -->
+        <div class="right-section">
+            <div class="notice-board-card">
+                <div class="notice-header">
+                    <span class="notice-icon">📢</span>
+                    <h2>பொது மக்கள் அறிவிப்புகள் (Public Announcements)</h2>
+                    <span class="live-indicator">● LIVE</span>
+                </div>
+
+                <div class="notice-scroll-container">
+                    <div class="notice-list notice-list-track">
+                        <% if (typeof announcements !== 'undefined' && announcements.length > 0) { %>
+                            <% announcements.forEach(function(notice) { %>
+                                <div class="notice-item">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span class="notice-date">📅 <%= notice.date %></span>
+                                    </div>
+                                    <h3>📢 MLA அறிவிப்பு</h3>
+                                    <p><%= notice.content %></p>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="notice-item">
+                                <span class="notice-date">📌 தகவல்</span>
+                                <h3>தற்போது புதிய அறிவிப்புகள் எதுவுமில்லை</h3>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Scripts -->
+    <script>
+        // Modal Controls
+        function openLoginModal() {
+            document.getElementById('loginOverlay').style.display = 'flex';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginOverlay').style.display = 'none';
+        }
+
+        function switchTab(type) {
+            const loginType = document.getElementById('loginType');
+            const tabPublic = document.getElementById('tabPublic');
+            const tabOfficial = document.getElementById('tabOfficial');
+            const publicSec = document.getElementById('publicLoginSection');
+            const officialSec = document.getElementById('officialLoginSection');
+
+            if (type === 'Public') {
+                loginType.value = 'public';
+                tabPublic.className = 'tab-btn-active';
+                tabOfficial.className = 'tab-btn-inactive';
+                publicSec.style.display = 'block';
+                officialSec.style.display = 'none';
+            } else {
+                loginType.value = 'official';
+                tabOfficial.className = 'tab-btn-active';
+                tabPublic.className = 'tab-btn-inactive';
+                officialSec.style.display = 'block';
+                publicSec.style.display = 'none';
+            }
+        }
+
+        function handlePublicOTPFlow() {
+            const mobile = document.getElementById('mobileNumber').value;
+            const otpSec = document.getElementById('otpSection');
+            const btn = document.getElementById('publicSubmitBtn');
+            const form = document.getElementById('unifiedLoginForm');
+
+            if (!mobile || mobile.length !== 10) {
+                alert('தயவுசெய்து சரியான 10-இலக்க மொபைல் எண்ணை உள்ளிடவும்!');
+                return;
+            }
+
+            if (otpSec.style.display === 'none') {
+                fetch('/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobileNumber: mobile })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        otpSec.style.display = 'block';
+                        btn.innerText = 'உள்நுழை (Login) ❯';
+                    }
+                })
+                .catch(err => alert('OTP அனுப்புவதில் பிழை ஏற்பட்டது!'));
+            } else {
+                form.submit();
+            }
+        }
+
+        function openOfficialModal() {
+            document.getElementById("officerModal").style.display = "block";
+        }
+
+        function closeOfficialModal() {
+            document.getElementById("officerModal").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById("officerModal");
+            const loginOverlay = document.getElementById("loginOverlay");
+            if (event.target === modal) modal.style.display = "none";
+            if (event.target === loginOverlay) loginOverlay.style.display = "none";
+        };
+
+        function filterDepartments() {
+            const input = document.getElementById("searchDepartment");
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById("officersTable");
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let textContent = tr[i].textContent || tr[i].innerText;
+                tr[i].style.display = textContent.toLowerCase().indexOf(filter) > -1 ? "" : "none";
+            }
+        }
+
+        // Ticker Auto Scroll
+        document.addEventListener("DOMContentLoaded", function () {
+            const container = document.querySelector('.notice-scroll-container');
+            const track = document.querySelector('.notice-list-track');
+
+            if (container && track && track.children.length > 0) {
+                track.innerHTML += track.innerHTML;
+                let scrollSpeed = 0.8;
+                let isHovered = false;
+
+                function autoScroll() {
+                    if (!isHovered) {
+                        container.scrollTop += scrollSpeed;
+                        if (container.scrollTop >= track.scrollHeight / 2) {
+                            container.scrollTop = 0;
+                        }
+                    }
+                    requestAnimationFrame(autoScroll);
+                }
+
+                container.addEventListener('mouseenter', () => isHovered = true);
+                container.addEventListener('mouseleave', () => isHovered = false);
+                autoScroll();
+            }
+        });
+
+        // Translation Dictionary
+        const dict = {
+            ta: {
+                pageTitle: "அதிகாரப்பூர்வ உள்நுழைவு போர்ட்டல்",
+                txtSkip: "முக்கிய உள்ளடக்கத்திற்குச் செல்லவும்",
+                txtCallUs: "📞 எங்களை அழைக்கவும்",
+                txtMainTitle: "தமிழ்நாடு மக்கள் குறைதீர்ப்பு போர்ட்டல்",
+                txtSubTitle: "PUBLIC GRIEVANCE REDRESSAL PORTAL • GOVERNMENT OF TAMIL NADU",
+                btnHeaderLogin: "Login"
+            },
+            en: {
+                pageTitle: "Official Login Portal",
+                txtSkip: "Skip to main content",
+                txtCallUs: "📞 Call Us",
+                txtMainTitle: "Tamil Nadu Public Grievance Portal",
+                txtSubTitle: "PUBLIC GRIEVANCE REDRESSAL PORTAL • GOVERNMENT OF TAMIL NADU",
+                btnHeaderLogin: "Login"
+            }
+        };
+
+        function toggleLanguage(lang) {
+            if (dict[lang]) {
+                document.title = dict[lang].pageTitle;
+                document.getElementById('txtSkip').innerText = dict[lang].txtSkip;
+                document.getElementById('txtCallUs').innerText = dict[lang].txtCallUs;
+                document.getElementById('txtMainTitle').innerText = dict[lang].txtMainTitle;
+                document.getElementById('txtSubTitle').innerText = dict[lang].txtSubTitle;
+                document.getElementById('btnHeaderLogin').innerText = dict[lang].btnHeaderLogin;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <title>மனு பதிவு செய்யப்பட்டது</title>
+    <style>
+        body { font-family: sans-serif; background: #f1f5f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 450px; }
+        .id-box { background: #dbeafe; color: #1e40af; font-size: 24px; font-weight: bold; padding: 15px; border-radius: 8px; margin: 20px 0; border: 2px dashed #3b82f6; }
+        .btn { display: inline-block; padding: 10px 20px; background: #1e3a8a; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 style="color: #16a34a; margin-top:0;">✅ மனு வெற்றிகரமாகப் பதிவு செய்யப்பட்டது!</h2>
+        <p>உங்கள் மனுவை எதிர்காலத்தில் பின்தொடர கீழே உள்ள எண்களைக் குறித்துக் கொள்ளவும்:</p>
+        
+        <div class="id-box"><%= grievanceId %></div>
+        
+        <a href="/grievance-details" class="btn">🔍 மனுவின் நிலையைக் கண்டறிய (Check Status)</a>
+        <br><br>
+        <a href="/" style="color: #64748b; text-decoration: none;">முதன்மைப் பக்கம் செல்ல</a>
+    </div>
+    <% if (typeof item !== 'undefined' && item.grievanceId) { %>
+    <a href="/download-pdf/<%= item.grievanceId %>" target="_blank" class="btn btn-primary" style="background:#1e3c72; color:white; padding:10px 15px; text-decoration:none; border-radius:5px; display:inline-block; margin-top:10px;">
+        📄 ஒப்புதல் சீட்டு (PDF) பதிவிறக்கு
+    </a>
+<% } else if (typeof complaint !== 'undefined' && (complaint.grievanceId || complaint.id)) { %>
+    <a href="/download-pdf/<%= complaint.grievanceId || complaint.id %>" target="_blank" class="btn btn-primary" style="background:#1e3c72; color:white; padding:10px 15px; text-decoration:none; border-radius:5px; display:inline-block; margin-top:10px;">
+        📄 ஒப்புதல் சீட்டு (PDF) பதிவிறக்கு
+    </a>
+<% } else if (typeof grievanceId !== 'undefined') { %>
+    <a href="/download-pdf/<%= grievanceId %>" target="_blank" class="btn btn-primary" style="background:#1e3c72; color:white; padding:10px 15px; text-decoration:none; border-radius:5px; display:inline-block; margin-top:10px;">
+        📄 ஒப்புதல் சீட்டு (PDF) பதிவிறக்கு
+    </a>
+<% } %>
+</body>
+</html>
