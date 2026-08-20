@@ -3,317 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MLA Profile Settings</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        * { 
-            box-sizing: border-box; 
-            font-family: 'Noto Sans Tamil', sans-serif; 
-        }
-        body { 
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); 
-            min-height: 100vh; 
-            margin: 0; 
-            padding: 40px 20px; 
-            color: #333; 
-        }
-        
-        .profile-card { 
-            max-width: 750px; 
-            margin: 0 auto; 
-            background: #ffffff; 
-            border-radius: 16px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.25); 
-            overflow: hidden; 
-        }
-
-        /* Card Header with Dashboard Button */
-        .card-header { 
-            background: linear-gradient(45deg, #0b3c5d, #1d6fa5); 
-            color: white; 
-            padding: 25px; 
-            position: relative;
-            text-align: center; 
-        }
-        .btn-dashboard-top {
-            position: absolute;
-            left: 20px;
-            top: 25px;
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: 0.3s;
-        }
-        .btn-dashboard-top:hover {
-            background: white;
-            color: #0b3c5d;
-        }
-
-        .card-header h2 { 
-            margin: 0; 
-            font-size: 24px; 
-            letter-spacing: 0.5px; 
-        }
-        .card-header p { 
-            margin: 5px 0 0; 
-            opacity: 0.8; 
-            font-size: 13px; 
-        }
-        
-        .card-body { 
-            padding: 30px; 
-        }
-        
-        /* Fixed Image Circle Box */
-        .image-upload-wrapper { 
-            text-align: center; 
-            margin-bottom: 25px; 
-        }
-        .profile-img-container { 
-            position: relative; 
-            width: 130px; 
-            height: 130px; 
-            margin: 0 auto 12px; 
-            border-radius: 50%; 
-            overflow: hidden; 
-            border: 4px solid #0b3c5d; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
-            background-color: #f1f5f9;
-        }
-        #imgPreview { 
-            width: 100% !important; 
-            height: 100% !important; 
-            object-fit: cover !important; 
-            display: block;
-        }
-
-        .upload-btn-label { 
-            display: inline-block; 
-            background-color: #f0f4f8; 
-            color: #0b3c5d; 
-            padding: 8px 18px; 
-            border-radius: 20px; 
-            font-size: 13px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            border: 1px solid #cbd5e1; 
-            transition: 0.3s; 
-        }
-        .upload-btn-label:hover { 
-            background-color: #0b3c5d; 
-            color: white; 
-        }
-        #profileImage { 
-            display: none; 
-        }
-
-        /* Responsive Form Layout */
-        .form-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 15px; 
-        }
-        .full-width { 
-            grid-column: span 2; 
-        }
-        
-        .form-group { 
-            margin-bottom: 5px; 
-        }
-        .form-group label { 
-            display: block; 
-            font-weight: 600; 
-            font-size: 13.5px; 
-            margin-bottom: 6px; 
-            color: #1e293b; 
-        }
-        .form-group input, .form-group textarea { 
-            width: 100%; 
-            padding: 11px 14px; 
-            border: 1.5px solid #cbd5e1; 
-            border-radius: 8px; 
-            font-size: 14px; 
-            transition: 0.3s; 
-            background: #f8fafc; 
-        }
-        .form-group input:focus, .form-group textarea:focus { 
-            border-color: #0b3c5d; 
-            background: #fff; 
-            outline: none; 
-            box-shadow: 0 0 0 3px rgba(11, 60, 93, 0.15); 
-        }
-        
-        /* Action Buttons Grid */
-        .button-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        .btn-submit { 
-            flex: 2;
-            background: linear-gradient(45deg, #0b3c5d, #1d6fa5); 
-            color: white; 
-            border: none; 
-            padding: 14px; 
-            font-size: 16px; 
-            font-weight: 700; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            box-shadow: 0 4px 12px rgba(11, 60, 93, 0.3); 
-            transition: 0.3s; 
-        }
-        .btn-submit:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 6px 15px rgba(11, 60, 93, 0.4); 
-        }
-        .btn-dashboard-bottom {
-            flex: 1;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: #e2e8f0;
-            color: #334155;
-            text-decoration: none;
-            padding: 14px;
-            font-size: 15px;
-            font-weight: 700;
-            border-radius: 8px;
-            transition: 0.3s;
-            text-align: center;
-        }
-        .btn-dashboard-bottom:hover {
-            background: #cbd5e1;
-            color: #0f172a;
-        }
-
-        @media (max-width: 600px) { 
-            .form-grid { grid-template-columns: 1fr; } 
-            .full-width { grid-column: span 1; } 
-            .card-header { padding-top: 60px; }
-            .btn-dashboard-top { top: 15px; left: 50%; transform: translateX(-50%); }
-            .button-group { flex-direction: column; }
-        }
-    </style>
+    <title>சுயவிவர நிர்வாகம்</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen py-8 px-4 font-sans">
 
-<div class="profile-card">
-    <div class="card-header">
-        <!-- Header Top Button -->
-        <a href="/dashboard" class="btn-dashboard-top">← Dashboard</a>
-        <h2>MLA சுயவிவர நிர்வாகம்</h2>
-        <p>தனிப்பட்ட விவரங்கள் மற்றும் தகவல்களைப் புதுப்பிக்கவும்</p>
-    </div>
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+        
+        <!-- Header Banner -->
+        <div class="bg-gradient-to-r from-blue-900 to-indigo-800 text-white p-6 sm:p-8 relative">
+            <a href="/dashboard" class="inline-flex items-center text-sm bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition duration-200 backdrop-blur-sm mb-4">
+                <i class="fas fa-arrow-left mr-2"></i> Dashboard
+            </a>
+            <div class="text-center">
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-wide">
+                    <%= (typeof currentRole !== 'undefined' && currentRole === 'Poruppalar') ? 'பொறுப்பாளர் சுயவிவர நிர்வாகம்' : 'MLA சுயவிவர நிர்வாகம்' %>
+                </h1>
+                <p class="text-blue-100 text-sm mt-2 opacity-90">
+                    <%= (typeof currentRole !== 'undefined' && currentRole === 'Poruppalar') ? 'பொறுப்பாளர் தனிப்பட்ட விவரங்கள் மற்றும் தகவல்களைப் புதுப்பிக்கவும்' : 'தனிப்பட்ட விவரங்கள் மற்றும் தகவல்களைப் புதுப்பிக்கவும்' %>
+                </p>
+            </div>
+        </div>
 
-    <div class="card-body">
-        <form id="profileForm" enctype="multipart/form-data">
+        <!-- Profile Form -->
+        <form id="profileForm" enctype="multipart/form-data" class="p-6 sm:p-10 space-y-8">
             
-            <!-- Image Upload & Live Preview Section -->
-            <div class="image-upload-wrapper">
-                <div class="profile-img-container">
-                    <img id="imgPreview" 
-                         src="<%= (mla && mla.profileImage && mla.profileImage !== '') ? mla.profileImage : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' %>" 
-                         onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png';" 
-                         alt="MLA Profile Picture">
+            <!-- Profile Image Section -->
+            <div class="flex flex-col items-center justify-center -mt-16 sm:-mt-20">
+                <div class="relative group">
+                    <img id="imagePreview" 
+                         src="<%= mla.profileImage || 'https://via.placeholder.com/150' %>" 
+                         alt="Profile Picture" 
+                         class="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-white shadow-lg group-hover:opacity-90 transition">
+                    
+                    <label for="profileImage" class="absolute bottom-1 right-1 bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-full cursor-pointer shadow-md transition transform hover:scale-105">
+                        <i class="fas fa-camera text-sm"></i>
+                        <input type="file" id="profileImage" name="profileImage" accept="image/*" class="hidden" onchange="previewFile()">
+                    </label>
                 </div>
-                <label for="profileImage" class="upload-btn-label">📷 புகைப்படம் மாற்றுக</label>
-                <input type="file" id="profileImage" name="profileImage" accept="image/*">
+                <span class="text-xs text-gray-500 mt-2">புகைப்படம் மாற்ற மேலே உள்ள கேமரா ஐகானைக் கிளிக் செய்யவும்</span>
             </div>
 
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>பெயர் (Name):</label>
-                    <input type="text" id="name" name="name" value="<%= mla ? mla.name : '' %>" required>
+            <!-- Form Inputs Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                
+                <!-- Name -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">பெயர் (Name):</label>
+                    <input type="text" name="name" value="<%= mla.name || '' %>" required
+                           class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition bg-gray-50 focus:bg-white">
                 </div>
 
-                <div class="form-group">
-                    <label>அரசியல் கட்சி (Party):</label>
-                    <input type="text" id="party" name="party" value="<%= (mla && mla.party) ? mla.party : '' %>" placeholder="கட்சி பெயர்">
+                <!-- Party -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">அரசியல் கட்சி (Party):</label>
+                    <input type="text" name="party" value="<%= mla.party || '' %>"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition bg-gray-50 focus:bg-white">
                 </div>
 
-                <div class="form-group">
-                    <label>பதவி (Designation):</label>
-                    <input type="text" id="designation" name="designation" value="<%= (mla && mla.designation) ? mla.designation : 'சட்டமன்ற உறுப்பினர்' %>">
+                <!-- Designation -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">பதவி (Designation):</label>
+                    <input type="text" name="designation" value="<%= mla.designation || '' %>"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition bg-gray-50 focus:bg-white">
                 </div>
 
-                <div class="form-group">
-                    <label>தொகுதி (Constituency):</label>
-                    <input type="text" id="constituency" name="constituency" value="<%= mla ? mla.constituency : '' %>" required>
+                <!-- Constituency -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">தொகுதி (Constituency):</label>
+                    <input type="text" name="constituency" value="<%= mla.constituency || '' %>"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition bg-gray-50 focus:bg-white">
                 </div>
 
-                <div class="form-group">
-                    <label>அலைபேசி எண் (Mobile):</label>
-                    <input type="tel" id="mobile" name="mobile" value="<%= mla ? mla.mobile : '' %>" required>
+                <!-- Mobile -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">அலைபேசி எண் (Mobile):</label>
+                    <input type="tel" name="mobile" value="<%= mla.mobile || '' %>"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition bg-gray-50 focus:bg-white">
                 </div>
 
-                <div class="form-group">
-                    <label>மின்னஞ்சல் (Email):</label>
-                    <input type="email" id="email" name="email" value="<%= mla ? mla.email : '' %>">
+                <!-- Email -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">மின்னஞ்சல் (Email):</label>
+                    <input type="email" name="email" value="<%= mla.email || '' %>"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition bg-gray-50 focus:bg-white">
                 </div>
 
-                <div class="form-group full-width">
-                    <label>அலுவலக வேலை நேரம் (Office Hours):</label>
-                    <input type="text" id="officeHours" name="officeHours" value="<%= (mla && mla.officeHours) ? mla.officeHours : '' %>" placeholder="எ.கா: காலை 09:00 - மாலை 05:00">
+                <!-- Office Hours -->
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">அலுவலக வேலை நேரம் (Office Hours):</label>
+                    <input type="text" name="officeHours" value="<%= mla.officeHours || '' %>" placeholder="எ.கா: காலை 09:00 - மாலை 05:00"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition bg-gray-50 focus:bg-white">
                 </div>
 
-                <div class="form-group full-width">
-                    <label>அலுவலக முகவரி (Address):</label>
-                    <textarea id="address" name="address" rows="3"><%= mla ? mla.address : '' %></textarea>
+                <!-- Address -->
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">அலுவலக முகவரி (Address):</label>
+                    <textarea name="address" rows="3" 
+                              class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition bg-gray-50 focus:bg-white"><%= mla.address || '' %></textarea>
                 </div>
+
             </div>
 
-            <!-- Action Buttons -->
-            <div class="button-group">
-                <button type="submit" class="btn-submit">Profile Update செய்</button>
-                <a href="/dashboard" class="btn-dashboard-bottom">Dashboard</a>
+            <!-- Submit Button -->
+            <div class="pt-4 text-center">
+                <button type="submit" id="submitBtn" 
+                        class="w-full sm:w-auto px-10 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/30 transition duration-200 transform hover:-translate-y-0.5">
+                    சுயவிவரத்தைப் புதுப்பி (Update Profile)
+                </button>
             </div>
+
         </form>
     </div>
-</div>
 
-<script>
-// Image Selection - Local Live Preview
-document.getElementById('profileImage').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            document.getElementById('imgPreview').src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-});
+    <!-- Script for Image Preview & AJAX Submit -->
+    <script>
+        function previewFile() {
+            const preview = document.getElementById('imagePreview');
+            const file = document.getElementById('profileImage').files[0];
+            const reader = new FileReader();
 
-// Form Submit Handler
-document.getElementById('profileForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+            reader.onloadend = function () {
+                preview.src = reader.result;
+            }
 
-    const formData = new FormData(this);
-
-    try {
-        const response = await fetch('/mla/profile/update', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-        alert(result.message);
-
-        if (result.success && result.profileImage) {
-            document.getElementById('imgPreview').src = result.profileImage + '?t=' + new Date().getTime();
+            if (file) {
+                reader.readAsDataURL(file);
+            }
         }
-    } catch (error) {
-        console.error("Update Error:", error);
-        alert("Update செய்வதில் பிழை ஏற்பட்டது!");
-    }
-});
-</script>
 
+        document.getElementById('profileForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "புதுப்பிக்கப்படுகிறது...";
+
+            const formData = new FormData(this);
+
+            try {
+                const response = await fetch('/mla/profile/update', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('சுயவிவரம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!');
+                    if (result.profileImage) {
+                        document.getElementById('imagePreview').src = result.profileImage;
+                    }
+                } else {
+                    alert('பிழை: ' + result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Profile update செய்வதில் பிழை ஏற்பட்டது.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "சுயவிவரத்தைப் புதுப்பி (Update Profile)";
+            }
+        });
+    </script>
 </body>
 </html>
