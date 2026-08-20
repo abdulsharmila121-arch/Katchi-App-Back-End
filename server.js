@@ -1,3 +1,7 @@
+require('dotenv').config();
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 const cron = require('node-cron');
 const express = require('express');
 const nodemailer = require('nodemailer');
@@ -7,6 +11,8 @@ const multer = require('multer');
 const fs = require('fs');
 const ExcelJS = require('exceljs');
 const mongoose = require('mongoose');
+const cors = require('cors');
+const Grievance = require('./models/Grievance');
 const twilio = require('twilio');
 const PDFDocument = require('pdfkit');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
@@ -145,22 +151,20 @@ app.use(session({
 app.set('views', path.resolve(__dirname, 'Views'));
 app.set('view engine', 'ejs');
 
-// Mongoose Schemas
-const grievanceSchema = new mongoose.Schema({
-    grievanceId: String,
-    citizenName: String,
-    citizenMobile: String,
-    fieldNotes: { type: String, default: "" },
-    resolvedImage: { type: String, default: "" }
-}, { timestamps: true });
-
-const Grievance = mongoose.model('Grievance', grievanceSchema);
-
 const userSchema = new mongoose.Schema({
     resolvedCount: { type: Number, default: 0 },
     points: { type: Number, default: 0 }
 });
 const User = mongoose.model('User', userSchema);
+
+// MongoDB Connection
+mongoose.connect(process.env.MONGODB_URI, {
+    tls: true,
+    tlsAllowInvalidCertificates: true,
+    serverSelectionTimeoutMS: 5000
+})
+.then(() => console.log('✅ MongoDB Connected Successfully!'))
+.catch((err) => console.error('❌ Connection Error:', err));
 
 // Multer Setup
 const storage = multer.diskStorage({
@@ -411,12 +415,12 @@ app.post('/login', (req, res) => {
             return res.redirect('/');
         }
 
-        const usersFilePath = path.join(__dirname, 'users_credentials.json');
+        // இங்கு பழைய users_credentials.json-க்கு பதிலாக USERS_FILE (users.json) பயன்படுத்த வேண்டும்
         let usersList = [];
 
-        if (fs.existsSync(usersFilePath)) {
+        if (fs.existsSync(USERS_FILE)) {
             try {
-                usersList = JSON.parse(fs.readFileSync(usersFilePath, 'utf-8'));
+                usersList = JSON.parse(fs.readFileSync(USERS_FILE, 'utf-8'));
             } catch (err) {
                 console.error("JSON Parse Error:", err);
             }
@@ -429,9 +433,9 @@ app.post('/login', (req, res) => {
 
         if (matchedUser) {
             req.session.isLoggedIn = true;
-            req.session.userRole = matchedUser.role;
-            req.session.constituency = matchedUser.constituency;
-            req.session.district = matchedUser.district;
+            req.session.userRole = matchedUser.role || 'MLA';
+            req.session.constituency = matchedUser.constituency || '';
+            req.session.district = matchedUser.district || '';
             return res.redirect('/');
         }
         return res.send("<script>alert('தவறான பயனர் பெயர் / கடவுச்சொல்!'); window.location.href='/login';</script>");
@@ -1150,6 +1154,11 @@ app.post('/submit-complaint', uploadFields, async (req, res) => {
             citizenName,
             applicantName: citizenName,
             citizenMobile: body.citizenMobile || body.mobile || '',
+            
+            // --- INGA DHAAN ADD PANNI IRUKKOM (Address & Pincode) ---
+            address: body.address || body.fullAddress || body.streetAddress || body.doorNo || body.wardZone || '',
+            pincode: body.pincode || body.pinCode || body.zipcode || body.postalCode || '',
+            
             district: body.district || '',
             constituency: body.constituency || '',
             wardZone: body.wardZone || body.ward || '',
@@ -1254,6 +1263,165 @@ app.all('/cm/forward-to-collector-pdf', async (req, res) => {
     } catch (error) {
         console.error("CM Forward PDF Error:", error);
         res.status(500).send("PDF பதிவிறக்கம் செய்வதில் பிழை ஏற்பட்டது.");
+    }
+});
+
+app.use(cors()); // Frontend-லிருந்து வரும் Request-களை அனுமதிக்க
+app.use(express.json()); // JSON Data-வை படிக்க
+
+app.get('/forgot-password.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'forgot-password.html'));
+});
+
+// Send OTP API Route
+app.post('/api/auth/forgot-password-otp', async (req, res) => {
+    try {
+        const { identifier } = req.body;
+        console.log("OTP requested for:", identifier);
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        console.log(`🔑 Demo OTP: ${otp}`);
+
+        res.json({ 
+            success: true, 
+            message: `OTP வெற்றிகரமாக அனுப்பப்பட்டது! (Test OTP: ${otp})` 
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server பிழை!" });
+    }
+});
+const USERS_FILE = path.join(__dirname, 'users.json');
+
+// Reset Password API - JSON File-இல் நேரடியாக மாற்றுவதற்கு
+app.post('/api/auth/reset-password', (req, res) => {
+    try {
+        const { identifier, otp, newPassword } = req.body;
+
+        if (!identifier || !newPassword) {
+            return res.status(400).json({ success: false, message: "தரவுகள் முழுமையாக இல்லை!" });
+        }
+
+        // 1. JSON கோப்பை வாசித்தல்
+        const fileData = fs.readFileSync(USERS_FILE, 'utf8');
+        let users = JSON.parse(fileData);
+
+        // 2. பயனர் பெயர் (Username) அல்லது தொகுதி (Constituency) மூலம் பயனரைக் கண்டறிதல்
+        const userIndex = users.findIndex(u => 
+            u.username.toLowerCase() === identifier.toLowerCase() || 
+            u.constituency.toLowerCase() === identifier.toLowerCase()
+        );
+
+        if (userIndex === -1) {
+            return res.status(404).json({ success: false, message: "பயனர் விவரம் கண்டறியப்படவில்லை!" });
+        }
+
+        // 3. புதிய கடவுச்சொல்லைப் புதுப்பித்தல்
+        users[userIndex].password = newPassword;
+
+        // 4. புதுப்பிக்கப்பட்ட தரவை மீண்டும் users.json கோப்பில் எழுதுதல்
+        fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf8');
+
+        console.log(`✅ ${users[userIndex].username}-ன் கடவுச்சொல் வெற்றிகரமாக மாற்றப்பட்டது!`);
+
+        return res.json({
+            success: true,
+            message: "கடவுச்சொல் வெற்றிகரமாக மாற்றப்பட்டு சேமிக்கப்பட்டது!",
+            username: users[userIndex].username
+        });
+
+    } catch (error) {
+        console.error("File Update Error:", error);
+        return res.status(500).json({ success: false, message: "கோப்பைத் திருத்துவதில் பிழை ஏற்பட்டது!" });
+    }
+});
+
+app.post('/api/auth/login', (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        if (!username || !password) {
+            return res.status(400).json({ success: false, message: "Username மற்றும் Password உள்ளிடவும்!" });
+        }
+
+        // users.json கோப்பை வாசித்தல்
+        const fileData = fs.readFileSync(USERS_FILE, 'utf8');
+        const users = JSON.parse(fileData);
+
+        // Username மற்றும் Password சரிபார்த்தல் (Case-insensitive username)
+        const validUser = users.find(u => 
+            u.username.toLowerCase() === username.trim().toLowerCase() && 
+            u.password === password.trim()
+        );
+
+        if (validUser) {
+            return res.json({ 
+                success: true, 
+                message: "உள்நுழைவு வெற்றி!", 
+                user: validUser 
+            });
+        } else {
+            return res.status(401).json({ 
+                success: false, 
+                message: "தவறான பயனர் பெயர் அல்லது கடவுச்சொல்!" 
+            });
+        }
+    } catch (error) {
+        console.error("Login Error:", error);
+        return res.status(500).json({ success: false, message: "Login செய்வதில் பிழை ஏற்பட்டது!" });
+    }
+});
+
+// Username & Password இரண்டையும் Reset செய்ய
+app.post('/api/auth/reset-credentials', (req, res) => {
+    try {
+        const { identifier, otp, newUsername, newPassword } = req.body;
+
+        if (!identifier || !newUsername || !newPassword) {
+            return res.status(400).json({ success: false, message: "தரவுகள் முழுமையாக இல்லை!" });
+        }
+
+        // 1. users.json கோப்பை வாசித்தல்
+        const fileData = fs.readFileSync(USERS_FILE, 'utf8');
+        let users = JSON.parse(fileData);
+
+        // 2. Phone, Email, Username, Constituency ஆகிய நான்கிலும் சரிபார்த்தல்
+        const userIndex = users.findIndex(u => 
+            (u.username && u.username.toLowerCase() === identifier.toLowerCase()) || 
+            (u.constituency && u.constituency.toLowerCase() === identifier.toLowerCase()) ||
+            (u.phone && u.phone.toString() === identifier.toString()) ||
+            (u.email && u.email.toLowerCase() === identifier.toLowerCase())
+        );
+
+        if (userIndex === -1) {
+            return res.status(404).json({ success: false, message: "பயனர் விவரம் கண்டறியப்படவில்லை!" });
+        }
+
+        // 3. புதிய Username ஏற்கனவே வேறு யாராவது பயன்படுத்துகிறார்களா எனச் சரிபார்த்தல்
+        const isUsernameTaken = users.some((u, idx) => 
+            idx !== userIndex && u.username && u.username.toLowerCase() === newUsername.toLowerCase()
+        );
+        
+        if (isUsernameTaken) {
+            return res.status(400).json({ success: false, message: "இந்த Username ஏற்கனவே பயன்படுத்தப்படுகிறது! வேறு ஒன்றை முயற்சிக்கவும்." });
+        }
+
+        // 4. புதிய Username மற்றும் Password-ஐ JSON தரவில் புதுப்பித்தல்
+        users[userIndex].username = newUsername;
+        users[userIndex].password = newPassword;
+
+        // 5. புதுப்பிக்கப்பட்ட தரவை மீண்டும் users.json கோப்பில் எழுதுதல்
+        fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf8');
+
+        console.log(`✅ ${identifier}-ன் விவரங்கள் புதிய Username: ${newUsername}-க்கு வெற்றிகரமாக மாற்றப்பட்டது!`);
+
+        return res.json({
+            success: true,
+            message: "பயனர் பெயர் மற்றும் கடவுச்சொல் வெற்றிகரமாக மாற்றப்பட்டு சேமிக்கப்பட்டது!"
+        });
+
+    } catch (error) {
+        console.error("Credentials Reset Error:", error);
+        return res.status(500).json({ success: false, message: "விவரங்களை மாற்றுவதில் பிழை ஏற்பட்டது!" });
     }
 });
 

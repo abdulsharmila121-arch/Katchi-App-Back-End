@@ -2,37 +2,194 @@
 <html lang="ta">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>மனு பதிவு செய்யப்பட்டது</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body { font-family: sans-serif; background: #f1f5f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 450px; }
-        .id-box { background: #dbeafe; color: #1e40af; font-size: 24px; font-weight: bold; padding: 15px; border-radius: 8px; margin: 20px 0; border: 2px dashed #3b82f6; }
-        .btn { display: inline-block; padding: 10px 20px; background: #1e3a8a; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 480px;
+            width: 100%;
+            position: relative;
+        }
+
+        .success-icon {
+            font-size: 50px;
+            color: #10b981;
+            margin-bottom: 15px;
+            animation: popIn 0.5s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            80% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        h2 {
+            color: #0f172a;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .id-box {
+            background: #f0fdf4;
+            color: #15803d;
+            font-size: 26px;
+            font-weight: 700;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 2px dashed #4ade80;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #047857 0%, #10b981 100%);
+            color: white;
+        }
+
+        .btn-download:hover {
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-logout {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-logout:hover {
+            background: #dc2626;
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .home-link:hover {
+            color: #1e3a8a;
+        }
     </style>
 </head>
 <body>
+
     <div class="card">
-        <h2 style="color: #16a34a; margin-top:0;">✅ மனு வெற்றிகரமாகப் பதிவு செய்யப்பட்டது!</h2>
+        <i class="fa-solid fa-circle-check success-icon"></i>
+        <h2>மனு வெற்றிகரமாகப் பதிவு செய்யப்பட்டது!</h2>
         <p>உங்கள் மனுவை எதிர்காலத்தில் பின்தொடர கீழே உள்ள எண்களைக் குறித்துக் கொள்ளவும்:</p>
         
-        <div class="id-box"><%= grievanceId %></div>
-        
-        <a href="/grievance-details" class="btn">🔍 மனுவின் நிலையைக் கண்டறிய (Check Status)</a>
-        <br><br>
-        <a href="/" style="color: #64748b; text-decoration: none;">முதன்மைப் பக்கம் செல்ல</a>
+        <div class="id-box">
+            <i class="fa-solid fa-ticket"></i> <%= grievanceId %>
+        </div>
+
+        <div class="btn-container">
+            <!-- PDF Download Option -->
+            <% if (typeof item !== 'undefined' && item.grievanceId) { %>
+                <a href="/download-pdf/<%= item.grievanceId %>" target="_blank" class="btn btn-download">
+                    <i class="fa-solid fa-file-pdf"></i> ஒப்புதல் சீட்டு (PDF) பதிவிறக்கு
+                </a>
+            <% } else if (typeof complaint !== 'undefined' && (complaint.grievanceId || complaint.id)) { %>
+                <a href="/download-pdf/<%= complaint.grievanceId || complaint.id %>" target="_blank" class="btn btn-download">
+                    <i class="fa-solid fa-file-pdf"></i> ஒப்புதல் சீட்டு (PDF) பதிவிறக்கு
+                </a>
+            <% } else if (typeof grievanceId !== 'undefined') { %>
+                <a href="/download-pdf/<%= grievanceId %>" target="_blank" class="btn btn-download">
+                    <i class="fa-solid fa-file-pdf"></i> ஒப்புதல் சீட்டு (PDF) பதிவிறக்கு
+                </a>
+            <% } %>
+
+            <!-- Status Check Link -->
+            <a href="/grievance-details" class="btn btn-primary">
+                <i class="fa-solid fa-magnifying-glass"></i> மனுவின் நிலையைக் கண்டறிய
+            </a>
+
+            <!-- Logout Button -->
+            <a href="/logout" class="btn btn-logout">
+                <i class="fa-solid fa-right-from-bracket"></i> வெளியேறு (Logout)
+            </a>
+        </div>
+
+        <a href="/" class="home-link">
+            <i class="fa-solid fa-house"></i> முதன்மைப் பக்கம் செல்ல
+        </a>
     </div>
-    <% if (typeof item !== 'undefined' && item.grievanceId) { %>
-    <a href="/download-pdf/<%= item.grievanceId %>" target="_blank" class="btn btn-primary" style="background:#1e3c72; color:white; padding:10px 15px; text-decoration:none; border-radius:5px; display:inline-block; margin-top:10px;">
-        📄 ஒப்புதல் சீட்டு (PDF) பதிவிறக்கு
-    </a>
-<% } else if (typeof complaint !== 'undefined' && (complaint.grievanceId || complaint.id)) { %>
-    <a href="/download-pdf/<%= complaint.grievanceId || complaint.id %>" target="_blank" class="btn btn-primary" style="background:#1e3c72; color:white; padding:10px 15px; text-decoration:none; border-radius:5px; display:inline-block; margin-top:10px;">
-        📄 ஒப்புதல் சீட்டு (PDF) பதிவிறக்கு
-    </a>
-<% } else if (typeof grievanceId !== 'undefined') { %>
-    <a href="/download-pdf/<%= grievanceId %>" target="_blank" class="btn btn-primary" style="background:#1e3c72; color:white; padding:10px 15px; text-decoration:none; border-radius:5px; display:inline-block; margin-top:10px;">
-        📄 ஒப்புதல் சீட்டு (PDF) பதிவிறக்கு
-    </a>
-<% } %>
+
 </body>
 </html>

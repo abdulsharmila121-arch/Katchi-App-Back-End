@@ -3,29 +3,51 @@ const { chromium } = require('playwright');
 async function generateMLAComplaintPDF(complaint) {
     let browser = null;
     try {
-        const citizenName = complaint.citizenName || complaint.applicantName || 'மனுதாரர்';
+        // Console-il data enna varudhu nu paarkka (debugging)
+        console.log("FULL COMPLAINT OBJECT:", JSON.stringify(complaint, null, 2));
+
+        const citizenName = complaint.citizenName || complaint.applicantName || complaint.name || 'மனுதாரர்';
+        
+        // 1. Address fallback logic:
+        // Direct address illati, wardZone, details, street maadhiri edhavadhu irundha edukkum.
+        // Adhum illati constituency + district-aiye fallback-a kaattum.
+        const address = complaint.address || 
+                        complaint.fullAddress || 
+                        complaint.streetAddress || 
+                        complaint.wardZone || 
+                        complaint.ward || 
+                        complaint.location ||
+                        (complaint.constituency ? `${complaint.constituency}, ${complaint.district || ''}` : 'N/A');
+
+        const constituency = complaint.constituency || complaint.district || 'N/A';
+        const district = complaint.district || complaint.constituency || 'N/A';
+        
+        // 2. Pincode logic:
+        const pincode = complaint.pincode || complaint.pinCode || complaint.zipcode || complaint.postalCode || '';
+        const citizenMobile = complaint.citizenMobile || complaint.mobile || complaint.phone || 'N/A';
+        
         const grievanceId = complaint.grievanceId || complaint.id || 'N/A';
         const createdDate = complaint.createdDate || complaint.createdAt || new Date().toLocaleDateString('en-GB');
-        const citizenMobile = complaint.citizenMobile || complaint.mobile || 'N/A';
-        const wardZone = complaint.wardZone || complaint.ward || '';
-        const constituency = complaint.constituency || '';
-        const district = complaint.district || '';
         const grievanceCategory = complaint.grievanceCategory || complaint.department || 'பொதுக் குறை';
         const description = complaint.description || complaint.details || 'விவரங்கள் எதுவும் குறிப்பிடப்படவில்லை.';
+
+        // District matrum Pincode join logic
+        let districtWithPin = district;
+        if (pincode) {
+            districtWithPin = `${district} - ${pincode}`;
+        }
 
         const htmlContent = `
         <!DOCTYPE html>
         <html lang="ta">
         <head>
-        <head>
-  <meta charset="UTF-8">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;700&display=swap" rel="stylesheet">
             <meta charset="UTF-8">
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;700&display=swap" rel="stylesheet">
             <style>
                 @page { size: A4; margin: 15mm 15mm 20mm 15mm; }
-                body { font-family: 'Arial', 'Latha', sans-serif; margin: 0; padding: 20px; color: #111; line-height: 1.7; background-color: #fff; }
+                body { font-family: 'Noto Sans Tamil', 'Arial', sans-serif !important; margin: 0; padding: 20px; color: #111; line-height: 1.7; background-color: #fff; }
                 .letter-container { border: 2px solid #222; padding: 30px; box-sizing: border-box; position: relative; }
                 .header { text-align: center; border-bottom: 2px double #222; padding-bottom: 12px; margin-bottom: 20px; }
                 .header-title { font-size: 20px; font-weight: bold; color: #0b3c5d; }
@@ -59,13 +81,15 @@ async function generateMLAComplaintPDF(complaint) {
                     </tr>
                 </table>
                 <div class="address-block">
-                    <div class="address-title">அனுப்புநர் (From):</div>
-                    <div class="address-details">
-                        <b>பெயர்:</b> ${citizenName}<br>
-                        <b>அலைபேசி:</b> ${citizenMobile}<br>
-                        <b>முகவரி / பகுதி:</b> ${wardZone}, ${constituency} தொகுதி, ${district} மாவட்டம்.
-                    </div>
-                </div>
+    <div class="address-title">அனுப்புநர் (From):</div>
+    <div class="address-details">
+        <b>மனுதாரர் பெயர்:</b> ${citizenName}<br>
+        ${showAddress ? `<b>முகவரி:</b> ${rawAddress}<br>` : ''}
+        <b>தொகுதி:</b> ${constituency}<br>
+        <b>மாவட்டம் - அஞ்சல் குறியீடு:</b> ${districtWithPin}<br>
+        <b>அலைபேசி எண்:</b> ${citizenMobile}
+    </div>
+</div>
                 <div class="address-block">
                     <div class="address-title">பெறுநர் (To):</div>
                     <div class="address-details">
@@ -79,7 +103,6 @@ async function generateMLAComplaintPDF(complaint) {
                 </div>
                 <div class="letter-body"><b>மதிப்பிற்குரிய ஐயா / அம்மா,</b></div>
                 <div class="description-text">${description}</div>
-                </div>
                 <div class="footer-section">
                     <table class="sign-table">
                         <tr>
@@ -97,11 +120,6 @@ async function generateMLAComplaintPDF(complaint) {
                 </div>
             </div>
         </body>
-        <style>
-    body {
-      font-family: 'Noto Sans Tamil', sans-serif !important;
-    }
-  </style>
         </html>
         `;
 
