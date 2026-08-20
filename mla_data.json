@@ -1,0 +1,43 @@
+{
+    "name": "மாண்புமிகு ஆர்.வி.ரஞ்சித் குமார்",
+    "party": "தமிழக வெற்றிக் கழகம்",
+    "designation": "சட்டமன்ற உறுப்பினர் மற்றும் வனத்துறை அமைச்சர்",
+    "constituency": "காஞ்சிபுரம்",
+    "mobile": "9876543210",
+    "email": "mla@tn.gov.in",
+    "officeHours": "காலை 09:00 - மாலை 05:00",
+    "address": "12, தாலுகா அலுவலக வீதி, காஞ்சிபுரம்",
+    "profileImage": "/uploads/mla-1787225452534-842073009.jpeg",
+    "default_mla": {
+        "name": "ஜோசப் விஜய்",
+        "party": "தமிழக வெற்றிக் கழகம்",
+        "designation": "முதலமைச்சர்",
+        "constituency": "தமிழ்நாடு",
+        "mobile": "9094611554",
+        "email": "gudluckenterprises26@gmail.com",
+        "officeHours": "காலை 09:00 - மாலை 05:00",
+        "address": "Apparao Street",
+        "profileImage": "/uploads/mla-1787227614016-595912774.jpg"
+    },
+    "காஞ்சிபுரம்": {
+        "name": "ஆர்.வி.ரஞ்சித் குமார்",
+        "party": "தமிழக வெற்றிக் கழகம்",
+        "designation": "சட்டமன்ற உறுப்பினர் மற்றும் வனத்துறை அமைச்சர்",
+        "constituency": "காஞ்சிபுரம்",
+        "mobile": "9566435155",
+        "email": "gudluckenterprises26@gmail.com",
+        "address": "Apparao Street",
+        "profileImage": "/uploads/mla-1787226506963-7109747.jpeg"
+    },
+    "All State": {
+        "name": "ஜோசப் விஜய்",
+        "party": "தமிழக வெற்றிக் கழகம் ",
+        "designation": "முதலமைச்சர்",
+        "constituency": "தமிழ்நாடு",
+        "mobile": "1100",
+        "email": "cmcell@tn.gov.in",
+        "officeHours": "காலை 09:00 - மாலை 05:00",
+        "address": "முதல்வரின் முகவரி துறை,தலைமைச் செயலகம்,சென்னை - 600009",
+        "profileImage": "/uploads/mla-1787229278663-859168156.jpg"
+    }
+}

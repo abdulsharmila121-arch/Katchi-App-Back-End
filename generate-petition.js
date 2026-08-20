@@ -3,26 +3,21 @@ const { chromium } = require('playwright');
 async function generateMLAComplaintPDF(complaint) {
     let browser = null;
     try {
-        // Console-il data enna varudhu nu paarkka (debugging)
         console.log("FULL COMPLAINT OBJECT:", JSON.stringify(complaint, null, 2));
 
         const citizenName = complaint.citizenName || complaint.applicantName || complaint.name || 'மனுதாரர்';
         
-        // 1. Address fallback logic:
-        // Direct address illati, wardZone, details, street maadhiri edhavadhu irundha edukkum.
-        // Adhum illati constituency + district-aiye fallback-a kaattum.
-        const address = complaint.address || 
-                        complaint.fullAddress || 
-                        complaint.streetAddress || 
-                        complaint.wardZone || 
-                        complaint.ward || 
-                        complaint.location ||
-                        (complaint.constituency ? `${complaint.constituency}, ${complaint.district || ''}` : 'N/A');
+        // Address & Fallback logic
+        const rawAddress = complaint.address || 
+                           complaint.fullAddress || 
+                           complaint.streetAddress || 
+                           complaint.wardZone || 
+                           complaint.ward || 
+                           complaint.location || '';
 
         const constituency = complaint.constituency || complaint.district || 'N/A';
         const district = complaint.district || complaint.constituency || 'N/A';
         
-        // 2. Pincode logic:
         const pincode = complaint.pincode || complaint.pinCode || complaint.zipcode || complaint.postalCode || '';
         const citizenMobile = complaint.citizenMobile || complaint.mobile || complaint.phone || 'N/A';
         
@@ -31,7 +26,6 @@ async function generateMLAComplaintPDF(complaint) {
         const grievanceCategory = complaint.grievanceCategory || complaint.department || 'பொதுக் குறை';
         const description = complaint.description || complaint.details || 'விவரங்கள் எதுவும் குறிப்பிடப்படவில்லை.';
 
-        // District matrum Pincode join logic
         let districtWithPin = district;
         if (pincode) {
             districtWithPin = `${district} - ${pincode}`;
@@ -81,15 +75,15 @@ async function generateMLAComplaintPDF(complaint) {
                     </tr>
                 </table>
                 <div class="address-block">
-    <div class="address-title">அனுப்புநர் (From):</div>
-    <div class="address-details">
-        <b>மனுதாரர் பெயர்:</b> ${citizenName}<br>
-        ${showAddress ? `<b>முகவரி:</b> ${rawAddress}<br>` : ''}
-        <b>தொகுதி:</b> ${constituency}<br>
-        <b>மாவட்டம் - அஞ்சல் குறியீடு:</b> ${districtWithPin}<br>
-        <b>அலைபேசி எண்:</b> ${citizenMobile}
-    </div>
-</div>
+                    <div class="address-title">அனுப்புநர் (From):</div>
+                    <div class="address-details">
+                        <b>மனுதாரர் பெயர்:</b> ${citizenName}<br>
+                        ${rawAddress ? `<b>முகவரி:</b> ${rawAddress}<br>` : ''}
+                        <b>தொகுதி:</b> ${constituency}<br>
+                        <b>மாவட்டம் - அஞ்சல் குறியீடு:</b> ${districtWithPin}<br>
+                        <b>அலைபேசி எண்:</b> ${citizenMobile}
+                    </div>
+                </div>
                 <div class="address-block">
                     <div class="address-title">பெறுநர் (To):</div>
                     <div class="address-details">

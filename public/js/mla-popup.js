@@ -65,7 +65,6 @@ document.addEventListener("DOMContentLoaded", function () {
             letter-spacing: 0.5px;
         }
 
-        /* FULL IMAGE VIEW WITH ANIMATED ROTATING BORDER */
         .mla-img-wrapper {
             position: relative;
             display: inline-block;
@@ -194,45 +193,73 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // 3. CONSTITUENCY DROPDOWN CHANGE HANDLER
-    const constituencySelect = document.getElementById('constituency') || 
-                               document.getElementById('thoguthi') || 
+    const constituencySelect = document.querySelector('select#constituency') || 
+                               document.querySelector('select#thoguthi') || 
                                document.querySelector('select[name="constituency"]') || 
                                document.querySelector('select[name="thoguthi"]');
 
     if (constituencySelect) {
-        constituencySelect.addEventListener('change', function (e) {
-            const selectedConstituency = e.target.value;
+        // மக்கள் படிவம் (Public Form)-ல் Popup தோன்றாமல் தடுக்க
+        const isPublicForm = constituencySelect.closest('#publicGrievanceForm') || 
+                             constituencySelect.closest('.public-form') ||
+                             document.body.classList.contains('public-page');
 
-            if (selectedConstituency && typeof mlaData !== 'undefined' && mlaData[selectedConstituency]) {
-                const info = mlaData[selectedConstituency];
+        if (!isPublicForm) {
+            constituencySelect.addEventListener('change', async function (e) {
+                const selectedConstituency = e.target.value;
+                if (!selectedConstituency) return;
 
-                document.getElementById('popupThoguthiName').innerText = selectedConstituency + " தொகுதி";
-                document.getElementById('popupMlaName').innerText = info.name;
-                document.getElementById('popupMlaParty').innerText = "கட்சி: " + info.party;
-                document.getElementById('popupMlaPhone').innerText = info.phone;
+                let mlaInfo = null;
 
-                // Set image path (from mlaData or auto search from /mlas/ folder)
-                const imageSrc = info.photo ? info.photo : `/mlas/${selectedConstituency}.jpg`;
-                const photoElement = document.getElementById('popupMlaPhoto');
-                photoElement.src = imageSrc;
+                // 1. Fetch from Database / API
+                try {
+                    const response = await fetch(`/api/mla/${encodeURIComponent(selectedConstituency)}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success) mlaInfo = data;
+                    }
+                } catch (err) {
+                    console.log("Database fetch failed, fallback to local mlaData");
+                }
 
-                // Fallback image if file not found
-                photoElement.onerror = function() {
-                    this.src = "https://via.placeholder.com/170?text=No+Image";
-                };
+                // 2. Fallback to local mlaData
+                if (!mlaInfo && typeof mlaData !== 'undefined' && mlaData[selectedConstituency]) {
+                    mlaInfo = mlaData[selectedConstituency];
+                }
 
-                const dialogue = info.dialogue || `"மக்களின் குரலாய்... என்றும் களத்தில் உங்களோடு!"`;
-                document.getElementById('popupMlaDialogue').innerText = dialogue;
+                // 3. Populate Modal
+                if (mlaInfo) {
+                    document.getElementById('popupThoguthiName').innerText = selectedConstituency + " தொகுதி";
+                    document.getElementById('popupMlaName').innerText = mlaInfo.name || "விவரம் இல்லை";
+                    document.getElementById('popupMlaParty').innerText = "கட்சி: " + (mlaInfo.party || "-");
+                    document.getElementById('popupMlaPhone').innerText = mlaInfo.phone || mlaInfo.mobile || "தொடர்பு எண் இல்லை";
 
-                // Show Modal
-                document.getElementById('mlaPopupOverlay').classList.add('active');
+                    const photoElement = document.getElementById('popupMlaPhoto');
+                    let imageSrc = mlaInfo.photo || mlaInfo.profileImage;
+                    
+                    if (!imageSrc) {
+                        imageSrc = `/mlas/${selectedConstituency}.jpg`;
+                    }
 
-                // Auto Close after 5 Seconds
-                setTimeout(() => {
-                    closeMlaPopup();
-                }, 5000);
-            }
-        });
+                    photoElement.src = imageSrc;
+
+                    photoElement.onerror = function() {
+                        this.src = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+                    };
+
+                    const dialogue = mlaInfo.dialogue || `"மக்களின் குரலாய்... என்றும் களத்தில் உங்களோடு!"`;
+                    document.getElementById('popupMlaDialogue').innerText = dialogue;
+
+                    // Show Modal
+                    document.getElementById('mlaPopupOverlay').classList.add('active');
+
+                    // Auto Close after 5 Seconds
+                    setTimeout(() => {
+                        closeMlaPopup();
+                    }, 5000);
+                }
+            });
+        }
     }
 });
 

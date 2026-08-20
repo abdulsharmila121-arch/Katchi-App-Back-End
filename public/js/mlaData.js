@@ -313,3 +313,16 @@ const mlaData = {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = mlaData;
 }
+// data/mlaData.js - கோப்பின் கடைசி வரியில் சேர்க்கவும்
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = mlaData;
+}
+
+// Any image format loader function
+function getDynamicMlaPhoto(photoPath, constituency) {
+    if (photoPath && photoPath.trim() !== '') {
+        return photoPath; // MLA Profile Form-ல் upload பண்ணிய image path (.png, .webp, .jpeg)
+    }
+    // Static fallback
+    return `/mlas/${constituency}.jpg`;
+}

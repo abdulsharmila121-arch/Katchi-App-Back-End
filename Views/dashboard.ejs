@@ -449,6 +449,66 @@
         .cm-card { border-top: 4px solid var(--gov-dark-blue); }
         .cm-card h2, .cm-card h3 { color: var(--gov-dark-blue); border-bottom: 2px solid #b0bec5; padding-bottom: 8px; font-size: 18px; font-weight: 800; }
     </style>
+    <style>
+        /* Header Profile Avatar & Layout Fix */
+.nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 10px 20px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.profile-logout-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-profile-link {
+    display: inline-block;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 2px solid #0b3c5d;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.header-profile-link:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(11, 60, 93, 0.4);
+}
+
+.header-avatar {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block;
+}
+
+.btn-logout {
+    text-decoration: none;
+    color: #333;
+    border: 1px solid #cbd5e1;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    font-weight: 600;
+    background: #f8fafc;
+    transition: 0.2s;
+}
+
+.btn-logout:hover {
+    background: #fee2e2;
+    color: #dc2626;
+    border-color: #fca5a5;
+}
+</style>
 </head>
 <body>
 
@@ -497,12 +557,14 @@
             <button onclick="toggleSection('cmMainTableSection')"><span>📋</span><span class="btn-text">5. Grievances Overview</span></button>
         <% } else if (currentRole === 'MLA') { %>
             <h3>🏛️ MLA Control Panel</h3>
+            <a href="/mla/profile" class="nav-item">👤 என் சுயவிவரம் (Profile)</a>
             <a href="/export-excel"><span>📥</span><span class="btn-text">1. Excel Download</span></a>
             <a href="/view-archive" target="_blank"><span>📂</span><span class="btn-text">2. Archive Document View</span></a>
             <a href="#" onclick="showMlaSection('leaderboard-section')"><span>🏆</span><span class="sidebar-link">3. துறை லீடர்போர்டு</span></a>
             <button onclick="toggleSection('deptOverview')"><span>📊</span><span class="btn-text">4. Department Overview</span></button>
             <button onclick="toggleSection('wardPendingList')"><span>📍</span><span class="btn-text">5. Ward Pending List</span></button>
             <button onclick="toggleSection('announcementFormSection')"><span>📋</span><span class="btn-text">6. Announcement</span></button>
+            <a href="/mla/profile" style="background-color: #0b3c5d; color: white; padding: 10px; display: block; margin-top: 10px; text-decoration: none; border-radius: 4px;">👤 சுயவிவரம் திருத்த (Edit Profile)</a></div>
         <% } else if (currentRole === 'Poruppalar') { %>
             <h3>🚩 பொறுப்பாளர் பேனல்</h3>
 
@@ -592,6 +654,13 @@
                     <% } %>
                 </div>
             </div>
+            <!-- MLA Profile Avatar & Logout Section -->
+    <a href="/mla/profile" class="header-profile-link" title="Profile Update செய்ய கிளிக் செய்யவும்">
+    <img src="<%= (typeof mla !== 'undefined' && mla && mla.profileImage) ? mla.profileImage : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' %>" 
+         onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png';" 
+         alt="MLA Profile" 
+         class="header-avatar">
+</a>
             
             <% if (typeof req !== 'undefined' && req.session && req.session.isLoggedIn) { %>
                 <a href="/logout" onclick="handleLogout()" class="btn-logout">📲 வெளியேறு (Logout)</a>

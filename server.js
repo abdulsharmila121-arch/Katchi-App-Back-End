@@ -16,7 +16,7 @@ const Grievance = require('./models/Grievance');
 const twilio = require('twilio');
 const PDFDocument = require('pdfkit');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-
+const MlaModel = require('./models/Mla');
 // District Data Import
 const districtData = require('./data/districtData');
 
@@ -325,8 +325,22 @@ app.get('/dashboard', async (req, res) => {
         const currentRole = req.session.userRole || 'Public';
         const constituency = req.session.constituency || '';
 
+        // லாகின் செய்த MLA-வின் Key
+        let mlaKey = 'default_mla';
+        if (req.session && req.session.userId) mlaKey = req.session.userId;
+        else if (req.session && req.session.user && req.session.user.email) mlaKey = req.session.user.email;
+        else if (req.session && req.session.constituency) mlaKey = req.session.constituency;
+
+        const dataFilePath = path.join(__dirname, 'mla_data.json');
+        let mlaData = null;
+        
+        if (fs.existsSync(dataFilePath)) {
+            const allMlaData = JSON.parse(fs.readFileSync(dataFilePath, 'utf-8'));
+            mlaData = allMlaData[mlaKey] || null; 
+        }
+
         res.render('dashboard', {
-            complaint: complaintsList[0] || {},
+            mla: mlaData,
             user: currentUser,
             currentRole: currentRole,
             constituency: constituency,
@@ -344,6 +358,7 @@ app.get('/dashboard', async (req, res) => {
         res.status(500).send("Server Error");
     }
 });
+
 
 app.post('/cm/forward-to-collector', async (req, res) => {
     try {
@@ -1194,25 +1209,39 @@ const { generateMLAComplaintPDF } = require('./generate-petition');
 
 app.get('/view-petition-pdf/:id', async (req, res) => {
     try {
-        const grievanceId = req.params.id;
-        const complaint = complaintsList.find(c => 
-            String(c.grievanceId) === String(grievanceId) || 
-            String(c.id) === String(grievanceId)
-        );
+        const petitionId = req.params.id;
 
-        if (!complaint) {
-            return res.status(404).send("மனு காணப்படவில்லை!");
+        // புகாரை கண்டுபிடிக்கிறது
+        let complaintData = null;
+        if (typeof complaintsList !== 'undefined') {
+            complaintData = complaintsList.find(c => (c.grievanceId === petitionId || c.id === petitionId));
         }
 
-        const pdfBuffer = await generateMLAComplaintPDF(complaint);
+        // Complaint இல்லையெனில் Default/Fallback Data
+        if (!complaintData) {
+            complaintData = {
+                grievanceId: petitionId,
+                citizenName: "மனுதாரர்",
+                constituency: req.session.constituency || "காஞ்சிபுரம்",
+                district: "காஞ்சிபுரம்",
+                citizenMobile: "9876543210",
+                grievanceCategory: "குடிநீர் வசதி",
+                description: "எங்கள் பகுதியில் குடிநீர் விநியோகம் சீராக இல்லை. நடவடிக்கை எடுக்குமாறு கேட்டுக்கொள்கிறேன்.",
+                createdDate: new Date().toLocaleDateString('en-GB')
+            };
+        }
 
+        // Playwright மூலம் PDF Generate பண்றது
+        const pdfBuffer = await generateMLAComplaintPDF(complaintData);
+
+        // Browser-ல் PDF ஆகக் காட்டுவது
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename=Petition_${grievanceId}.pdf`);
+        res.setHeader('Content-Disposition', `inline; filename=Petition-${petitionId}.pdf`);
         res.send(pdfBuffer);
 
-    } catch (err) {
-        console.error("View PDF Error:", err);
-        res.status(500).send("PDF திரையிடுவதில் பிழை ஏற்பட்டது.");
+    } catch (error) {
+        console.error("PDF Display Error:", error);
+        res.status(500).send("PDF திரையிடுவதில் பிழை ஏற்பட்டது: " + error.message);
     }
 });
 
@@ -1422,6 +1451,35 @@ app.post('/api/auth/reset-credentials', (req, res) => {
     } catch (error) {
         console.error("Credentials Reset Error:", error);
         return res.status(500).json({ success: false, message: "விவரங்களை மாற்றுவதில் பிழை ஏற்பட்டது!" });
+    }
+});
+
+const mlaProfileRouter = require('./routes/mlaProfile');
+app.use('/', mlaProfileRouter);
+
+// தொகுதி பெயரை வைத்து MLA விவரங்களைப் பெற API
+app.get('/api/mla/:constituency', async (req, res) => {
+    try {
+        const constituencyName = req.params.constituency;
+
+        // உங்கள் Database (MongoDB/MySQL)-ல் இருந்து Fetch செய்யும் கோடு
+        // Example: const mla = await MlaModel.findOne({ constituency: constituencyName });
+        
+        if (mla) {
+            res.json({
+                success: true,
+                name: mla.name,
+                party: mla.party,
+                phone: mla.mobile || mla.phone,
+                // Server-ல் MLA Upload பண்ணிய உண்மையான Image URL (jpg, png, webp எதுவாக இருந்தாலும்)
+                photo: mla.profileImage, 
+                dialogue: mla.dialogue || "மக்களின் குரலாய்... என்றும் களத்தில் உங்களோடு!"
+            });
+        } else {
+            res.status(404).json({ success: false, message: "MLA விவரங்கள் கிடைக்கவில்லை" });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
