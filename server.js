@@ -16,7 +16,7 @@ const Grievance = require('./models/Grievance');
 const twilio = require('twilio');
 const PDFDocument = require('pdfkit');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const MlaModel = require('./models/Mla');
+const MlaModel = require('./models/mla');
 // District Data Import
 const districtData = require('./data/districtData');
 
