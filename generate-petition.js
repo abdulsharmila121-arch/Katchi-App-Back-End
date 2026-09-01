@@ -51,7 +51,7 @@ async function generateMLAComplaintPDF(complaint) {
                 .meta-right { text-align: right; }
                 .address-block { margin-bottom: 15px; font-size: 13.5px; }
                 .address-title { font-weight: bold; text-decoration: underline; margin-bottom: 3px; }
-                .address-details { margin-left: 10px; }
+                .address-details { margin-left: 10px; font-weight: normal; }
                 .subject-box { background-color: #f4f6f8; border-left: 4px solid #0b3c5d; padding: 8px 12px; font-size: 13.5px; font-weight: bold; margin: 15px 0 20px 0; }
                 .description-text { font-size: 13.5px; text-align: justify; white-space: pre-line; word-wrap: break-word; margin: 15px 0; text-indent: 30px; }
                 .letter-body { font-size: 13.5px; text-align: justify; margin-bottom: 10px; }
@@ -77,11 +77,11 @@ async function generateMLAComplaintPDF(complaint) {
                 <div class="address-block">
                     <div class="address-title">அனுப்புநர் (From):</div>
                     <div class="address-details">
-                        <b>மனுதாரர் பெயர்:</b> ${citizenName}<br>
-                        ${rawAddress ? `<b>முகவரி:</b> ${rawAddress}<br>` : ''}
-                        <b>தொகுதி:</b> ${constituency}<br>
-                        <b>மாவட்டம் - அஞ்சல் குறியீடு:</b> ${districtWithPin}<br>
-                        <b>அலைபேசி எண்:</b> ${citizenMobile}
+                        ${citizenName}<br>
+                        ${rawAddress ? `${rawAddress}<br>` : ''}
+                        ${constituency}<br>
+                        ${districtWithPin}<br>
+                        ${citizenMobile}
                     </div>
                 </div>
                 <div class="address-block">
